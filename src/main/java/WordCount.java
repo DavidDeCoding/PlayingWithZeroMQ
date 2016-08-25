@@ -56,6 +56,7 @@ public class WordCount {
         // TODO: New way to handle waits :(
         try { Thread.sleep(1000); } catch (Exception e) { e.printStackTrace(); } // Lets sleep for a while
         System.out.println(result);
+        System.exit(0);
     }
 
     private static class PullToRouterActor extends Thread {
