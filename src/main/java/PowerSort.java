@@ -15,8 +15,8 @@ public class PowerSort {
     public static void main(String[] args) {
         ZContext ctx = new ZContext();
         String driverSock = "inproc://driversock";
-        int noOfFes = 1;
-        int noOfBes = 1;
+        int noOfFes = 2;
+        int noOfBes = 2;
 
         // Driver(PUSH) --> PULL -> REQ -> LoadBalancer(ROUTER) --> REQ -> PUSH --> Driver(PULL)
         // Creating Driver
