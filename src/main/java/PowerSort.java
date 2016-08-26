@@ -5,6 +5,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.charset.Charset;
+import java.text.Collator;
 import java.util.*;
 
 /**
@@ -110,23 +111,109 @@ public class PowerSort {
 
                 // Parsing Request
                 if (operation.equals("SORT")) {
-
                     try {
                         File file =  new File(argument);
-                        StringBuilder buff = new StringBuilder();
+
                         if (file.exists()) {
-                            BufferedReader reader = new BufferedReader(new FileReader(argument));
-                            String line = null;
-                            while ((line = reader.readLine()) != null) {
-                                buff.append(line);
+
+                            if (file.isDirectory()) {
+                                File[] internalFiles = file.listFiles();
+                                for (File internalFile: internalFiles) {
+                                    StringBuilder buff = new StringBuilder();
+                                    BufferedReader reader = new BufferedReader(new FileReader(internalFile));
+                                    String line = null;
+                                    while ((line = reader.readLine()) != null) {
+                                        buff.append(line);
+                                    }
+                                    push.send(buff.toString());
+                                }
+                                for (int responseCount = 0; responseCount < internalFiles.length; responseCount++) {
+                                    // Waiting for result
+                                    String[] result = pull.recvStr(Charset.defaultCharset()).split(" ");
+                                    int count = 10;
+                                    for (int i = 0; i < result.length; i++) {
+                                        if (i % count == 0) System.out.print("\n");
+                                        System.out.print(" " + result[i] + " ");
+                                    }
+                                }
+                            }
+                            else if (file.isFile()) {
+                                StringBuilder buff = new StringBuilder();
+                                BufferedReader reader = new BufferedReader(new FileReader(file));
+                                String line = null;
+                                while ((line = reader.readLine()) != null) {
+                                    buff.append(line);
+                                }
+                                push.send(buff.toString());
+                                // Waiting for result
+                                String[] result = pull.recvStr(Charset.defaultCharset()).split(" ");
+                                int count = 13;
+                                for (int i = 0; i < result.length; i++) {
+                                    if (i % count == 0) System.out.print("\n");
+                                    System.out.print(" " + result[i] + " ");
+                                }
                             }
                         }
 
-                        push.send(buff.toString());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else if (operation.equals("USORT")) {
+                    try {
+                        File file =  new File(argument);
 
-                        // Waiting for result
-                        String result = pull.recvStr(Charset.defaultCharset());
-                        System.out.println(result);
+                        if (file.exists()) {
+
+                            if (file.isDirectory()) {
+                                File[] internalFiles = file.listFiles();
+                                for (File internalFile: internalFiles) {
+                                    StringBuilder buff = new StringBuilder();
+                                    BufferedReader reader = new BufferedReader(new FileReader(internalFile));
+                                    String line = null;
+                                    while ((line = reader.readLine()) != null) {
+                                        buff.append(line);
+                                    }
+                                    push.send(buff.toString());
+                                }
+                                for (int responseCount = 0; responseCount < internalFiles.length; responseCount++) {
+                                    // Waiting for result
+                                    List<String> words = Arrays.asList(pull.recvStr(Charset.defaultCharset()).split(" "));
+                                    Set<String> set = new HashSet<String>();
+                                    int count = 13;
+                                    int i = 0;
+                                    for (String word: words) {
+                                        if (set.contains(word)) continue;
+
+                                        i++;
+                                        if (i % count == 0) System.out.print("\n");
+                                        System.out.print(" " + word + " ");
+                                        set.add(word);
+                                    }
+                                }
+                            }
+                            else if (file.isFile()) {
+                                StringBuilder buff = new StringBuilder();
+                                BufferedReader reader = new BufferedReader(new FileReader(file));
+                                String line = null;
+                                while ((line = reader.readLine()) != null) {
+                                    buff.append(line);
+                                }
+                                push.send(buff.toString());
+                                // Waiting for result
+                                List<String> words = Arrays.asList(pull.recvStr(Charset.defaultCharset()).split(" "));
+                                Set<String> set = new HashSet<String>();
+                                int count = 13;
+                                int i = 0;
+                                for (String word: words) {
+                                    if (set.contains(word)) continue;
+
+                                    i++;
+                                    if (i % count == 0) System.out.print("\n");
+                                    System.out.print(" " + word + " ");
+                                    set.add(word);
+                                }
+                            }
+                        }
 
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -136,6 +223,7 @@ public class PowerSort {
                 // Responding with result
                 server.send("Done.");
             }
+
 
         }
 
@@ -216,7 +304,7 @@ public class PowerSort {
                 req.send("Done");
 
                 // Processing
-                Arrays.sort(data);
+                Arrays.sort(data, Collator.getInstance());
                 StringBuilder result = new StringBuilder();
                 for (int i = 0; i < data.length; i++) result.append(" " + data[i] + " ");
 
