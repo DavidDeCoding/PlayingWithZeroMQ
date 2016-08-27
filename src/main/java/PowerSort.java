@@ -324,7 +324,7 @@ public class PowerSort {
 
 
     // THE LOADBALANCER
-    static class LoadBalancer extends Thread {
+    private static class LoadBalancer extends Thread {
         private String frontendSocket;
         private String backendSocket;
         private ZMQ.Socket frontend;
