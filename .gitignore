@@ -2,4 +2,3 @@ build/
 logs/
 .idea/
 .gradle/
-gradle/
