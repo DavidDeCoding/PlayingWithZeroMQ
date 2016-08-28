@@ -30,6 +30,7 @@ public class HttpServer {
             be.start();
         }
 
+        System.out.println("The http server is running on 127.0.0.1:10001...");
 
         while (!Thread.interrupted()) {
             try {
